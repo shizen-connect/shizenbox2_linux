@@ -206,7 +206,20 @@ ssize_t iio_read_const_attr(struct device *dev,
 	return sprintf(buf, "%s\n", to_iio_const_attr(attr)->string);
 }
 EXPORT_SYMBOL(iio_read_const_attr);
+/**
+ * iio_device_id() - query the unique ID for the device
+ * @indio_dev:		Device structure whose ID is being queried
+ *
+ * The IIO device ID is a unique index used for example for the naming
+ * of the character device /dev/iio\:device[ID]
+ */
+int iio_device_id(struct iio_dev *indio_dev)
+{
+	struct iio_dev_opaque *iio_dev_opaque = to_iio_dev_opaque(indio_dev);
 
+	return iio_dev_opaque->id;
+}
+EXPORT_SYMBOL_GPL(iio_device_id);
 /**
  * iio_device_set_clock() - Set current timestamping clock for the device
  * @indio_dev: IIO device structure containing the device
@@ -1700,7 +1713,7 @@ static int iio_check_unique_scan_index(struct iio_dev *indio_dev)
 
 	if (!(indio_dev->modes & INDIO_ALL_BUFFER_MODES))
 		return 0;
-
+    printk("indio_dev->num_channels: %u\n", indio_dev->num_channels);
 	for (i = 0; i < indio_dev->num_channels - 1; i++) {
 		if (channels[i].scan_index < 0)
 			continue;
